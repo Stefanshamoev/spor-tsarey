@@ -12554,6 +12554,7 @@ else { renderMenu(); try { showSplash(); } catch (e) {} cloudInit(); }
   let q = 0; const deco = () => { q = 0; document.querySelectorAll('#app .sheet button.btn:not([data-i3])').forEach(b => { b.dataset.i3 = '1'; const t = (b.textContent || '').trim(); const r = RULES.find(x => x[0].test(t)); if (r) { b.classList.add('hasi3'); b.insertAdjacentHTML('afterbegin', `<img class="bi3d" src="${BI[r[1]]}" alt="" draggable="false">`); } }); };
   new MutationObserver(() => { if (!q) q = requestAnimationFrame(deco); }).observe(document.getElementById('app') || document.body, { childList: true, subtree: true });
 } catch (e) {} })();
+window.__testSiege = () => startSiege({ stage: { city: 'Учебная крепость', year: 'проверка', siege: 'brick', title: 'Проверка штурма' }, idx: -1, cqtut: 1, day: 1 });
 })();
 
 /* v188: if the battle panel (question, answers, explanation) does not fit, it is scaled down a little instead of being cut off */
@@ -13456,9 +13457,12 @@ svg.m3d{overflow:visible}
   }
   window.pwaRestore = openRestore;
   // номер версии внизу настроек, чтобы было видно, дошло ли обновление
-  const PWA_VER = 'v210';
+  const PWA_VER = 'v211';
   new MutationObserver(() => { const b = document.getElementById('bksave'); if (!b || document.getElementById('pwaver')) return; const tab = b.closest('.tablet'); if (!tab) return;
-    const d = document.createElement('div'); d.id = 'pwaver'; d.className = 'note'; d.style.cssText = 'margin-top:8px;opacity:.8'; d.textContent = 'Версия приложения: ' + PWA_VER; tab.insertAdjacentElement('afterend', d); }).observe(document.documentElement, { childList: true, subtree: true });
+    const d = document.createElement('div'); d.id = 'pwaver'; d.className = 'note'; d.style.cssText = 'margin-top:8px;opacity:.8'; d.textContent = 'Версия приложения: ' + PWA_VER; tab.insertAdjacentElement('afterend', d);
+    // кнопка для проверки: сразу открыть учебный штурм тараном
+    if (typeof window.__testSiege === 'function') { const tb = document.createElement('button'); tb.className = 'btn ghost sm'; tb.id = 'pwasiege'; tb.type = 'button'; tb.style.marginTop = '8px'; tb.textContent = 'Проверить штурм тараном';
+      tb.onclick = () => { try { document.querySelectorAll('.sheet, .sheetbg, .sheet-bg, .shade').forEach(e => e.remove()); } catch (e) {} window.__testSiege(); }; d.insertAdjacentElement('afterend', tb); } }).observe(document.documentElement, { childList: true, subtree: true });
   // на экране «Как тебя зовут?» — заметная ссылка для тех, кто уже играл в версии в Claude
   const addLink = () => {
     const inp = document.getElementById('pname'); if (!inp || document.getElementById('pwalink')) return;
