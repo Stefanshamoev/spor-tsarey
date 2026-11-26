@@ -11,6 +11,14 @@
 <link rel="apple-touch-icon" href="icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<style>
+/* PWA на iPhone: в режиме «На экран Домой» высота 100% у iOS короче экрана, снизу оставалась чёрная полоса. Тело игры закрепляем на весь экран. */
+@media (display-mode: standalone), (display-mode: fullscreen){
+  :root{padding-top:0!important;padding-bottom:0!important}
+  html,body{height:100%!important;overflow:hidden}
+  body{position:fixed!important;inset:0!important;height:auto!important;padding-top:env(safe-area-inset-top,0px)!important;box-sizing:border-box}
+}
+</style>
 <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Спор царей</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -13346,6 +13354,41 @@ svg.m3d{overflow:visible}
 .btn.sm.hasi3{padding-left:6px;padding-right:10px}.btn.sm .bi3d{width:22px;height:22px;margin:-6px 3px -6px -2px}
 </style>
 
+
+<style>
+/* v209: штурм тараном — вопросы больше не закрывают сцену. Сцена вписывается в свободное место над окном вопроса (вертикаль) или слева от него (горизонталь) */
+#app:has(.stage.siege):has(#panel .qtab, #panel .topicpick) #panel{min-height:0}
+@media (orientation:landscape){#app:has(.stage.siege):has(#panel .qtab, #panel .topicpick) #panel{justify-self:end;width:min(46%,440px);margin-right:calc(96px + env(safe-area-inset-right,0px))}}
+</style>
+<script>
+/* v209: место для сцены штурма — самый большой свободный от окна вопроса прямоугольник сцены */
+(function () {
+  const fit = () => { try {
+    const st = document.querySelector('.stage.siege'), bg = st && st.querySelector('.roombg'); if (!bg) return;
+    const pn = document.getElementById('panel'), S = st.getBoundingClientRect();
+    const reset = () => { bg.style.top = bg.style.left = bg.style.width = bg.style.height = ''; bg.style.inset = ''; };
+    const box = pn && pn.querySelector('.qtab, .topicpick') ? (pn.querySelector('.tablet, .qtab') ? pn : null) : null;
+    if (!box) return reset();
+    // the visible part of the panel: from its first child to its last child
+    const kids = [...pn.children].filter(e => e.offsetParent !== null); if (!kids.length) return reset();
+    let t = Infinity, b = -Infinity, l = Infinity, r = -Infinity;
+    kids.forEach(e => { const q = e.getBoundingClientRect(); if (!q.height) return; t = Math.min(t, q.top); b = Math.max(b, q.bottom); l = Math.min(l, q.left); r = Math.max(r, q.right); });
+    if (t >= S.bottom || b <= S.top || l >= S.right || r <= S.left) return reset();
+    const cand = [
+      { x: 0, y: 0, w: S.width, h: t - S.top - 4 },            // above the question
+      { x: 0, y: 0, w: l - S.left - 4, h: S.height },           // left of it
+      { x: r - S.left + 4, y: 0, w: S.right - r - 4, h: S.height } // right of it
+    ].filter(c => c.w > 60 && c.h > 60);
+    if (!cand.length) return reset();
+    const sc = c => Math.min(c.w / 400, c.h / 300);
+    const c = cand.sort((a, b2) => sc(b2) - sc(a))[0];
+    bg.style.inset = 'auto'; bg.style.left = c.x + 'px'; bg.style.top = c.y + 'px'; bg.style.width = c.w + 'px'; bg.style.height = c.h + 'px';
+  } catch (e) {} };
+  let q = 0; const later = () => { if (!q) q = requestAnimationFrame(() => { q = 0; fit(); }); };
+  const go = () => { const a = document.getElementById('app'); if (!a) return setTimeout(go, 400); new MutationObserver(later).observe(a, { childList: true, subtree: true }); };
+  go(); addEventListener('resize', later); addEventListener('orientationchange', () => setTimeout(fit, 350));
+})();
+</script>
 
 <style>
 /* PWA: перенос прогресса и уведомление об обновлении */
