@@ -17,6 +17,8 @@
   :root{padding-top:0!important;padding-bottom:0!important}
   html,body{height:100%!important;overflow:hidden}
   body{position:fixed!important;inset:0!important;height:auto!important;padding-top:env(safe-area-inset-top,0px)!important;box-sizing:border-box}
+  /* если iOS всё же оставит полосу под игрой, она будет цвета нижней панели, а не чёрной */
+  html{background:var(--bg4,#0b2a5e)!important;min-height:100lvh}
 }
 </style>
 <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
@@ -13406,7 +13408,10 @@ svg.m3d{overflow:visible}
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
   if ('serviceWorker' in navigator && (location.protocol === 'https:')) {
     const hadCtl = !!navigator.serviceWorker.controller;
-    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+    window.addEventListener('load', () => navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+      // приложение на iPhone часто не перезапускается, а просыпается из фона: проверяем обновление и тогда
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') reg.update().catch(() => {}); });
+    }).catch(() => {}));
     let shown = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (!hadCtl || shown) return; shown = true;
@@ -13450,6 +13455,10 @@ svg.m3d{overflow:visible}
     $q('#pwax').onclick = () => ov.remove();
   }
   window.pwaRestore = openRestore;
+  // номер версии внизу настроек, чтобы было видно, дошло ли обновление
+  const PWA_VER = 'v210';
+  new MutationObserver(() => { const b = document.getElementById('bksave'); if (!b || document.getElementById('pwaver')) return; const tab = b.closest('.tablet'); if (!tab) return;
+    const d = document.createElement('div'); d.id = 'pwaver'; d.className = 'note'; d.style.cssText = 'margin-top:8px;opacity:.8'; d.textContent = 'Версия приложения: ' + PWA_VER; tab.insertAdjacentElement('afterend', d); }).observe(document.documentElement, { childList: true, subtree: true });
   // на экране «Как тебя зовут?» — заметная ссылка для тех, кто уже играл в версии в Claude
   const addLink = () => {
     const inp = document.getElementById('pname'); if (!inp || document.getElementById('pwalink')) return;
