@@ -7529,7 +7529,7 @@ function c3SiegeScene(opt, bg) { const T = THREE, me = nat(P.me), st = c3FoeStyl
   const X0 = -6.2, X1 = WX - 1.86, xOf = s => X0 + (X1 - X0) * Math.min(1, s / SG.steps);
   const S = { opt, canvas, R, sc, cam, fx: [], x: xOf(SGS.step), tx: xOf(SGS.step), step: SGS.step, hearts: SGS.hearts, t0: performance.now(), intro: 0, breach: 0, burn: 0, gate, gy: 0, st, L };
   const VIEW = { p: [-12.7, 6.2, 8.2], l: [-2.5, .7, -.1] }, FAR = { p: [WX + 12.5, 9.4, 10.5], l: [WX + 3.4, .4, 0] }, v3 = new T.Vector3();
-  S.size = () => { const w = stage.clientWidth, hh = stage.clientHeight; if (!w || !hh || (w === S.w && hh === S.h)) return; S.w = w; S.h = hh; R.setSize(w, hh, false); cam.aspect = w / hh; cam.fov = w < hh * 1.15 ? 44 : w < hh * 1.8 ? 38 : 30; cam.updateProjectionMatrix(); };
+  S.size = () => { const pe = canvas.parentNode || stage, w = pe.clientWidth, hh = pe.clientHeight; /* v212: размер по своему окну, не по всей сцене */ if (!w || !hh || (w === S.w && hh === S.h)) return; S.w = w; S.h = hh; R.setSize(w, hh, false); cam.aspect = w / hh; cam.fov = w < hh * 1.15 ? 44 : w < hh * 1.8 ? 38 : 30; cam.updateProjectionMatrix(); };
   const place = () => { ram.position.set(S.x, 0, 0); mine.forEach(g => g.position.set(S.x + g.userData.o[0] * 1.25, 0, g.userData.o[1])); ram.shields.forEach((s, i) => s.visible = i < S.hearts); };
   let perf = { n: 0, sum: 0, t: 0, done: window.__c3hi ? 1 : 0 }, last = 0, fr = 0, walk = 0;
   S.frame = now => { if (!canvas.isConnected) { try { R.dispose(); R.forceContextLoss(); } catch (e) {} if (C3.sg === S) C3.sg = null; return; } requestAnimationFrame(S.frame); if (window.__pal3d) return; if (P.fps60 && now - last < 15.5) return; const dt = Math.min(.1, (now - (last || now)) / 1000); last = now; S.size();
@@ -13394,6 +13394,23 @@ svg.m3d{overflow:visible}
 </script>
 
 <style>
+/* v212 (Stefan: «сделай пропорционально и достойно»): в штурме окно вопроса компактнее, сцена больше; 3D-штурм больше не сплющивается */
+#app:has(.stage.siege):has(#panel .qtab) #panel{gap:6px;min-height:0;padding-top:4px}
+#app:has(.stage.siege):has(#panel .qtab) #panel .qtab{padding:16px 13px 20px}
+#app:has(.stage.siege):has(#panel .qtab) .stage::before{display:none}
+#app:has(.stage.siege):has(#panel .qtab) #panel .qtab .meta{font-size:10.5px}
+#app:has(.stage.siege):has(#panel .qtab) #panel .qtab .q{font-size:14.5px;line-height:1.25;margin:4px 0 0}
+#app:has(.stage.siege):has(#panel .qtab) #panel .hintbar{margin-top:0;gap:6px}
+#app:has(.stage.siege):has(#panel .qtab) #panel .hb{flex-direction:row;justify-content:center;align-items:baseline;gap:6px;padding:5px 6px;border-radius:10px}
+#app:has(.stage.siege):has(#panel .qtab) #panel .hb b{font-size:12.5px} #app:has(.stage.siege):has(#panel .qtab) #panel .hb small{font-size:11px}
+#app:has(.stage.siege):has(#panel .qtab) #panel .answers{gap:6px}
+#app:has(.stage.siege):has(#panel .qtab) #panel .answers.grid .ans{min-height:40px;padding:6px 8px 6px 36px;font-size:13.5px;line-height:1.2;text-align:left;justify-content:flex-start}
+#app:has(.stage.siege):has(#panel .qtab) #panel .answers.grid .ans .k{top:50%;left:9px;transform:translateY(-50%);width:20px;height:20px;font-size:10.5px}
+@media (orientation:landscape){
+  #app:has(.stage.siege):has(#panel .qtab) #panel{justify-self:end;align-self:center;width:min(42%,400px);margin-right:calc(10px + env(safe-area-inset-right,0px))}
+}
+</style>
+<style>
 /* PWA: перенос прогресса и уведомление об обновлении */
 .pwa-ov{position:fixed;inset:0;z-index:9999;background:#0b1d40e6;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
 .pwa-ov .tablet{width:100%;max-width:420px;max-height:100%;overflow:auto;box-sizing:border-box}
@@ -13457,7 +13474,7 @@ svg.m3d{overflow:visible}
   }
   window.pwaRestore = openRestore;
   // номер версии внизу настроек, чтобы было видно, дошло ли обновление
-  const PWA_VER = 'v211';
+  const PWA_VER = 'v212';
   new MutationObserver(() => { const b = document.getElementById('bksave'); if (!b || document.getElementById('pwaver')) return; const tab = b.closest('.tablet'); if (!tab) return;
     const d = document.createElement('div'); d.id = 'pwaver'; d.className = 'note'; d.style.cssText = 'margin-top:8px;opacity:.8'; d.textContent = 'Версия приложения: ' + PWA_VER; tab.insertAdjacentElement('afterend', d);
     // кнопка для проверки: сразу открыть учебный штурм тараном
