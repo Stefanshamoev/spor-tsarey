@@ -12554,6 +12554,8 @@ else { renderMenu(); try { showSplash(); } catch (e) {} cloudInit(); }
   let q = 0; const deco = () => { q = 0; document.querySelectorAll('#app .sheet button.btn:not([data-i3])').forEach(b => { b.dataset.i3 = '1'; const t = (b.textContent || '').trim(); const r = RULES.find(x => x[0].test(t)); if (r) { b.classList.add('hasi3'); b.insertAdjacentHTML('afterbegin', `<img class="bi3d" src="${BI[r[1]]}" alt="" draggable="false">`); } }); };
   new MutationObserver(() => { if (!q) q = requestAnimationFrame(deco); }).observe(document.getElementById('app') || document.body, { childList: true, subtree: true });
 } catch (e) {} })();
+/* v213 (Stefan): при начале штурма в нижнем окне оставались карточки карты («Путь царя», «Поход») — пока идёт заставка, окно пустое */
+{ const ss213 = startSiege; startSiege = function () { const r = ss213.apply(this, arguments); try { if (stageMode === 'siege' && !panel.querySelector('.qtab, .topicpick, .coachcard')) panel.innerHTML = ''; } catch (e) {} return r; }; }
 window.__testSiege = () => startSiege({ stage: { city: 'Учебная крепость', year: 'проверка', siege: 'brick', title: 'Проверка штурма' }, idx: -1, cqtut: 1, day: 1 });
 })();
 
@@ -13411,6 +13413,10 @@ svg.m3d{overflow:visible}
 }
 </style>
 <style>
+/* v213 (Stefan: «песчаная буря выглядит некрасиво и неправдоподобно, убрать»): песчаной бури больше нет ни в бою, ни в штурме */
+.stage[data-wx=storm] .scene::before,.stage[data-wx=storm].siege .roombg::before{display:none!important;animation:none!important}
+</style>
+<style>
 /* PWA: перенос прогресса и уведомление об обновлении */
 .pwa-ov{position:fixed;inset:0;z-index:9999;background:#0b1d40e6;display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
 .pwa-ov .tablet{width:100%;max-width:420px;max-height:100%;overflow:auto;box-sizing:border-box}
@@ -13474,7 +13480,7 @@ svg.m3d{overflow:visible}
   }
   window.pwaRestore = openRestore;
   // номер версии внизу настроек, чтобы было видно, дошло ли обновление
-  const PWA_VER = 'v212';
+  const PWA_VER = 'v213';
   new MutationObserver(() => { const b = document.getElementById('bksave'); if (!b || document.getElementById('pwaver')) return; const tab = b.closest('.tablet'); if (!tab) return;
     const d = document.createElement('div'); d.id = 'pwaver'; d.className = 'note'; d.style.cssText = 'margin-top:8px;opacity:.8'; d.textContent = 'Версия приложения: ' + PWA_VER; tab.insertAdjacentElement('afterend', d);
     // кнопка для проверки: сразу открыть учебный штурм тараном
