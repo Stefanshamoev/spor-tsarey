@@ -1,5 +1,5 @@
 /* Спор царей — офлайн-режим. При каждой выкладке новой версии игры меняется VERSION. */
-const VERSION = 'spor-v215-pwa8';
+const VERSION = 'spor-v216-pwa9';
 const CORE = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/icon-180.png', 'icons/maskable-192.png', 'icons/maskable-512.png', 'icons/icon-32.png'];
 const RUNTIME = 'spor-runtime';
 self.addEventListener('install', e => {
