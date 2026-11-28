@@ -13479,7 +13479,7 @@ svg.m3d{overflow:visible}
   }
   window.pwaRestore = openRestore;
   // номер версии внизу настроек, чтобы было видно, дошло ли обновление
-  const PWA_VER = 'v214';
+  const PWA_VER = 'v215';
   new MutationObserver(() => { const b = document.getElementById('bksave'); if (!b || document.getElementById('pwaver')) return; const tab = b.closest('.tablet'); if (!tab) return;
     const d = document.createElement('div'); d.id = 'pwaver'; d.className = 'note'; d.style.cssText = 'margin-top:8px;opacity:.8'; d.textContent = 'Версия приложения: ' + PWA_VER; tab.insertAdjacentElement('afterend', d);
  }).observe(document.documentElement, { childList: true, subtree: true });
@@ -13502,4 +13502,14 @@ svg.m3d{overflow:visible}
 })();
 </script>
 
+<style>
+/* v215 (Stefan, пункт 359): в горизонтальном бою окно вопроса закрывало лицо и грудь царя. Окно уже и стоит между царями, цари отодвинуты к краям. Штурм не трогаем — у него своё окно справа. */
+@media (orientation:landscape) and (max-height:520px){
+#app:not(:has(.stage.siege)):has(#panel .qtab,#panel .topicpick) #panel{width:min(44%,430px)}
+#app:not(:has(.stage.siege)):has(#panel .qtab,#panel .topicpick) .slot.left{left:calc(.5% + env(safe-area-inset-left,0px))}
+#app:not(:has(.stage.siege)):has(#panel .qtab,#panel .topicpick) .slot.right{right:calc(.5% + env(safe-area-inset-right,0px))}
+#app:not(:has(.stage.siege)):has(#panel .qtab,#panel .topicpick) .stage::before{left:calc(50% - min(22%,215px) - 3%);right:calc(50% - min(22%,215px) - 3%)}
+#app:not(:has(.stage.siege)):has(#panel .qtab,#panel .topicpick) .stage .bubble{max-width:22%}
+}
+</style>
 </body></html>
